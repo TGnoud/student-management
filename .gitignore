@@ -4,7 +4,7 @@
 /node_modules
 /.pnp
 .pnp.js
-
+node_modules/
 # testing
 /coverage
 
@@ -21,3 +21,20 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# MongoDB data
+backend/mongodbdata/
+
+# Environment variables
+.env
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+Thumbs.db
