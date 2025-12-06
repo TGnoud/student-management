@@ -9,6 +9,8 @@ function HomePage() {
   const [age, setAge] = useState("");
   const [stuClass, setStuClass] = useState("");
   const [message, setMessage] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortAsc, setSortAsc] = useState(true);
   const navigate = useNavigate();
   useEffect(() => {
     axios.get('http://localhost:5000/api/students')
@@ -39,6 +41,17 @@ function HomePage() {
       })
       .catch(err => console.error("Lỗi khi xóa:", err)); 
   };
+  const filteredStudents = students.filter(student => 
+    student.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  const sortedStudents = [...filteredStudents].sort((a, b) => {
+    const nameA = a.name.toLowerCase();
+    const nameB = b.name.toLowerCase();
+    if (nameA < nameB) return sortAsc ? -1 : 1;
+    if (nameA > nameB) return sortAsc ? 1 : -1;
+    return 0;
+  });
+
   return (
     <div className="App" style={{ padding: "20px" }}>
       <h1>Quản lý học sinh</h1>
@@ -76,7 +89,19 @@ function HomePage() {
       </div>
       <hr />
       {/* Danh sách học sinh */}
-      <h3>Danh sách hiện tại</h3>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <h3>Danh sách hiện tại</h3>
+        <input 
+          type="text" 
+          placeholder="Tìm kiếm theo tên..." 
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ padding: "8px", width: "300px", height: "30px" }}
+        />
+        <button onClick={() => setSortAsc(prev => !prev)} style={{ cursor: "pointer" }}>
+                Sắp xếp: {sortAsc ? 'A → Z' : 'Z → A'}
+            </button>
+      </div>
       <table border="1" style={{ width: "100%", textAlign: "left", borderCollapse: "collapse" }}>
         <thead>
           <tr>
@@ -87,7 +112,7 @@ function HomePage() {
           </tr>
         </thead>
         <tbody>
-          {students.map((student) => (
+          {sortedStudents.map((student) => (
             <tr key={student._id}>
               <td>{student.name}</td>
               <td>{student.age}</td>
@@ -107,6 +132,7 @@ function HomePage() {
           ))}
         </tbody>
       </table>
+      {filteredStudents.length === 0 && <p style={{textAlign: "center"}}>Không tìm thấy học sinh nào phù hợp.</p>}
     </div>
   );
 }
